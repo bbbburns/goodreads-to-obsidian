@@ -23,7 +23,7 @@ If you're planning to do all future book reviews in a private Obsidian vault, bu
 Nothing, unless you choose to take some action. This is just a simple data converter.
 
 ## What about new books that I read?
-You could use another great plugin (link here) to add new books directly to Obsidian. This one won't do that.
+You could use another great plugin `Goodsidian` to add new books directly to Obsidian. This one won't do that.
 
 ## What if I want to keep using Goodreads?
-This this probably is not for you. However, there are some solutions that do that! Like [Goodsidian](https://github.com/selfire1/goodsidian) - which takes updates from your feeds of active Goodreads use and puts those into Obsidian. That wasn't what I wanted!
+Then this probably is not for you. However, there are some solutions that do that! Like [Goodsidian](https://github.com/selfire1/goodsidian) - which takes updates from your feeds of active Goodreads use and puts those into Obsidian. That wasn't what I wanted!
