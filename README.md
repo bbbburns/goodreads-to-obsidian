@@ -12,7 +12,7 @@ For those who want to migrate all of their existing Goodreads book data to indiv
 2. Optionally, build a books dashboard (think about including this as .md)
 3. Login to Goodreads.
 4. Export your books to CSV under My Books (think of sample book format)
-6. Run `whatever this sript is` 
+6. Run `csv-to-md.py` 
 7. Optionally, build some books dashboard
 8. Add new books with this other great plugin [Obsidian Book Search](https://github.com/anpigon/obsidian-book-search-plugin)
 
