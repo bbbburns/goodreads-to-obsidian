@@ -11,26 +11,7 @@
    Consider placing them straight into a vault folder?
 '''
 
-# import pandas as pd
-
-# Turns out vscode and environments are hard for my brain
-# no idea why the above pandas import gives me a Pylance error - but the code runs
-# disabled this print which proved that pandas was imported
-# print(pd.__version__)
-
 csv_rel_path = "example/goodreads_export_example.csv"
-
-# data = pd.read_csv( csv_rel_path, sep=',', engine='python', encoding="utf-8").fillna('')
-
-# books = data.values.tolist()
-
-# print(books)
-
-# The original author created a list, then looped through getting the index by number
-# That seems less than ideal when you know the data structure has named columns
-# maybe I should ditch pandas and just use the python CSV reader
-# I remember this being better.
-
 
 # Yeah - csv.DictReader is really what I'm after
 # https://docs.python.org/3/library/csv.html
