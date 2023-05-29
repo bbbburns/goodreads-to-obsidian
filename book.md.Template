@@ -1,23 +1,23 @@
 ---
 tags: book, media
 publish: false
-title: $title
+title: $Title
 series:
     series_name:
     series_num:
-author: [${author}]
-status: $status
-isbn: $isbn
-isbn13: $isbn13
+author: [${Author}]
+status: $Exclusive Shelf
+isbn: $ISBN
+isbn13: $ISBN13
 category:
 rating: $rating
-read_count: $read_count
-binding: $binding
-num_pages: $num_pages
-pub_date: $pub_date
+read_count: $Read Count
+binding: $Binding
+num_pages: $Number of Pages
+pub_date: $Year Published
 cover:
-date_start: $date_start
-date_end: $date_end
+date_start: $Date Added
+date_end: $Date Read
 created:
 modified:
 ---
@@ -26,4 +26,4 @@ modified:
 ## Description
 
 ## Review
-$review
+$My Review
