@@ -2,7 +2,7 @@
 Take a Goodreads CSV export and convert that into markdown notes for Obsidian
 
 ## Is it done?
-I haven't even written a single line of code. This is just an idea right now.
+I haven't even written a single line of code. This is just an idea right now. Thinking of using this very simple [Stackoverflow CSV to MD example](https://stackoverflow.com/questions/64509254/how-to-create-multiple-md-files-based-on-a-csv-file-and-enter-the-correct-rows)
 
 ## Who is this for?
 For those who want to migrate all of their existing Goodreads book data to individual markdown files in Obsidian. Then you plan to stop adding new books to Goodreads.
