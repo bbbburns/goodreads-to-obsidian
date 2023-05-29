@@ -1,0 +1,25 @@
+---
+tags: book, media
+publish: false
+title: $title
+series:
+    series_name: $series_name
+    series_num: $series_num
+author: $author
+status: $status
+isbn: $isbn
+isbn13: $isbn13
+rating: $rating
+read_count: $read_count
+binding: $binding
+num_pages: $num_pages
+pub_year: $pub_year
+date_start: $date_start
+date_end: $date_end
+created:
+modified:
+---
+# $title
+
+## Review
+$review
