@@ -10,7 +10,7 @@ status: $ExclusiveShelf
 isbn: $ISBN
 isbn13: $ISBN13
 category:
-rating: $rating
+rating: $MyRating
 read_count: $ReadCount
 binding: $Binding
 num_pages: $NumberofPages
@@ -21,7 +21,7 @@ date_end: $DateRead
 created:
 modified:
 ---
-# $title
+# $Title
 
 ## Description
 
