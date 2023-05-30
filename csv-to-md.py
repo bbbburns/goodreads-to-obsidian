@@ -18,6 +18,15 @@
 import csv
 from string import Template
 
+def remove_key_space(spaced_dict):
+    print("We got in this spaced dict")
+    print(spaced_dict)
+    # do some fixing courtesy of https://stackoverflow.com/questions/35758566/remove-space-from-dictionary-keys#35758583
+    unspaced_dict = {k.translate({32: None}): v for k, v in spaced_dict.items()}
+    print("Here is the dict after a fix")
+    print(unspaced_dict)
+    return unspaced_dict
+
 # handle the called row - replacing the text in template with Template safe_substitute
 def format_note(book_dict, template_string):
     print("In format_note")
@@ -59,7 +68,9 @@ with open(csv_path, newline='') as csv_file:
         # I think it's better to write one file at a time. See progress.
 
         # I could build a dictionary RIGHT HERE that doesn't have spaces and pass it
-        format_note(row, template_string)
+        fixed_dict = remove_key_space(row)
+        
+        format_note(fixed_dict, template_string)
 
 
 
