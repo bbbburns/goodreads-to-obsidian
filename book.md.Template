@@ -6,18 +6,18 @@ series:
     series_name:
     series_num:
 author: [${Author}]
-status: $Exclusive Shelf
+status: $ExclusiveShelf
 isbn: $ISBN
 isbn13: $ISBN13
 category:
 rating: $rating
-read_count: $Read Count
+read_count: $ReadCount
 binding: $Binding
-num_pages: $Number of Pages
-pub_date: $Year Published
+num_pages: $NumberofPages
+pub_date: $YearPublished
 cover:
-date_start: $Date Added
-date_end: $Date Read
+date_start: $DateAdded
+date_end: $DateRead
 created:
 modified:
 ---
@@ -26,4 +26,4 @@ modified:
 ## Description
 
 ## Review
-$My Review
+$MyReview
