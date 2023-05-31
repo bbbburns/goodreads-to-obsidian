@@ -43,35 +43,38 @@ def format_note(book_dict, template_string):
     book_md = template.safe_substitute(**book_dict)
     print("This is what your Markdown will look like")
     print(book_md)
+    return book_md
 
 # TODO Read in template
 # Have a draft template. Need to make sure it matches with future Obsidian Book Search files.
 
-template_path = "book.md.Template"
-csv_path = "example/goodreads_export_example.csv"
+def main():
+    template_path = "book.md.Template"
+    csv_path = "example/goodreads_export_example.csv"
 
-with open (template_path, newline='') as template_file:
-    template_string = template_file.read()
-    print(template_string)
+    # probably make a parse template function
+    with open (template_path, newline='') as template_file:
+        template_string = template_file.read()
+        print(template_string)
 
-# Yeah - csv.DictReader is really what I'm after
-# https://docs.python.org/3/library/csv.html
+    # Yeah - csv.DictReader is really what I'm after
+    # https://docs.python.org/3/library/csv.html
 
-import csv
-with open(csv_path, newline='') as csv_file:
-    reader = csv.DictReader(csv_file)
-    for row in reader:
-        print(row['Author'], row['Title'], row['My Rating'])
-        # Now I'm looping through EVERY row
-        # Is it better to write my .md file out from within this loop
-        # or should I build a data structure up, then do the writing later?
-        # I think it's better to write one file at a time. See progress.
+    with open(csv_path, newline='') as csv_file:
+        reader = csv.DictReader(csv_file)
+        for row in reader:
+            # print(row['Author'], row['Title'], row['My Rating'])
+            # Now I'm looping through EVERY row
+            # Is it better to write my .md file out from within this loop
+            # or should I build a data structure up, then do the writing later?
+            # I think it's better to write one file at a time. See progress.
 
-        # I could build a dictionary RIGHT HERE that doesn't have spaces and pass it
-        fixed_dict = remove_key_space(row)
-        
-        format_note(fixed_dict, template_string)
+            # I could build a dictionary RIGHT HERE that doesn't have spaces and pass it
+            fixed_dict = remove_key_space(row)
+            
+            book_md = format_note(fixed_dict, template_string)
+            
+            # TODO write out the replaced text into a .md file
 
-
-
-# TODO write out the replaced text into a .md file
+if __name__ == '__main__':
+    main()
