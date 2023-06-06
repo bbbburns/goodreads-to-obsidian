@@ -20,6 +20,8 @@ from string import Template
 import datetime
 
 def remove_key_space(spaced_dict):
+    # Handle keys in the mapping that have spaces
+    # 'Exclusive Shelf': 'read', 'My Review': 'Sample Text'
     # print("We got in this spaced dict")
     # print(spaced_dict)
     # do some fixing courtesy of https://stackoverflow.com/questions/35758566/remove-space-from-dictionary-keys#35758583
@@ -73,11 +75,6 @@ def format_note(book_dict, template_string):
 
     template = Template(template_string)
 
-    # this is broken because the keys in the mapping have spaces
-    # 'Exclusive Shelf': 'read', 'My Review': 'Sample Text'
-    # Should consider removing spaces from keys like ExclusiveShelf
-    # https://stackoverflow.com/questions/35758566/remove-space-from-dictionary-keys
-    # or maybe someone knows how to make keys with spaces work in Templates
     book_md = template.safe_substitute(**book_dict)
     print("This is what your Markdown will look like")
     print(book_md)
