@@ -33,19 +33,22 @@ def format_dates(slash_dict):
 
     date_read = slash_dict['DateRead']
     date_added = slash_dict['DateAdded']
-    print('This is the date read string')
-    print(date_read)
-    print('This is the date added string')
-    print(date_added)
+    #print('This is the date read string')
+    #print(date_read)
+    #print('This is the date added string')
+    #print(date_added)
 
     #TODO - just two repeated statements - could be a function or loop through values
+    # It seems like a dictionary translate or some other pythonic way exists to do this
+    # but I don't know it right now.
+    # ALSO - I could just replace slash with dash but using datetime seems fun
     if date_read:
       print("Date read was present. Fixing it.")
       datetime_read = datetime.datetime.strptime(date_read, format)
       slash_dict['DateRead'] = datetime_read.date()
       #print(datetime_read.date())
-    else:
-      print("Date read was false - just leaving it alone")
+    #else:
+      #print("Date read was false - just leaving it alone")
 
 
     if date_added:
@@ -53,10 +56,14 @@ def format_dates(slash_dict):
       datetime_added = datetime.datetime.strptime(date_added, format)
       slash_dict['DateAdded'] = datetime_added.date()
       #print(datetime_added.date())
-    else:
-      print("Date added was false - just leaving it alone")
+    #else:
+      #print("Date added was false - just leaving it alone")
     
     return slash_dict
+
+def fix_isbn(isbn_dict):
+    # TODO fix ISBN and ISNB13
+    return isbn_dict
 
 # handle the called row - replacing the text in template with Template safe_substitute
 def format_note(book_dict, template_string):
@@ -102,9 +109,12 @@ def main():
             unspaced_dict = remove_key_space(row)
 
             # TODO handle the formatting of ISBN somehow
+            # ="0553213105" and ="9780553213102" instead of just numbers
+            isbn_dict = fix_isbn(unspaced_dict)
+
             
-            # handle the formatting of dates
-            date_dict = format_dates(unspaced_dict)
+            # handle the formatting of dates from 2020/02/27 to 2020-02-27
+            date_dict = format_dates(isbn_dict)
 
             book_md = format_note(date_dict, template_string)
             
