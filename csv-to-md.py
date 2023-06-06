@@ -101,6 +101,13 @@ def main():
             # Is it better to write my .md file out from within this loop
             # or should I build a data structure up, then do the writing later?
             # I think it's better to write one file at a time. See progress.
+            
+            #check count of rows just to be SURE. 24?
+            # had one row of bad data from goodreads
+            if len(row) != 24:
+                print("Something went wrong. We should skip this book.")
+                print("Error was in " + row['Title'])
+                continue
 
             # Build a dictionary RIGHT HERE that doesn't have spaces and pass it
             unspaced_dict = remove_key_space(row)
