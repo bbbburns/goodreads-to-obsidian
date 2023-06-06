@@ -52,7 +52,6 @@ def format_dates(slash_dict):
     #else:
       #print("Date read was false - just leaving it alone")
 
-
     if date_added:
       print("Date added was present. Fixing it.")
       datetime_added = datetime.datetime.strptime(date_added, format)
@@ -60,11 +59,24 @@ def format_dates(slash_dict):
       #print(datetime_added.date())
     #else:
       #print("Date added was false - just leaving it alone")
-    
     return slash_dict
 
 def fix_isbn(isbn_dict):
-    # TODO fix ISBN and ISNB13
+    # Strip out any non-string values from the ISBN numbers
+    # I could validate the count or checksum, but assume goodreads does
+    if isbn_dict['ISBN']:
+      # print("ISBN 10 value found " + isbn_dict['ISBN'])
+      # Join all the digit values. Ignore spaces, dashes, whatever
+      isbn10 = ''.join(filter(str.isdigit, isbn_dict['ISBN']))
+      # print("Digits in ISBN10 " + isbn10)
+      isbn_dict['ISBN'] = isbn10
+
+    if isbn_dict['ISBN13']:
+      # print("ISBN 13 value found " + isbn_dict['ISBN13'])
+      # Join all the digit values. Ignore spaces, dashes, whatever
+      isbn13 = ''.join(filter(str.isdigit, isbn_dict['ISBN13']))
+      # print("Digits in ISBN13 " + isbn13)
+      isbn_dict['ISBN13'] = isbn13
     return isbn_dict
 
 # handle the called row - replacing the text in template with Template safe_substitute
@@ -112,10 +124,9 @@ def main():
             # Build a dictionary RIGHT HERE that doesn't have spaces and pass it
             unspaced_dict = remove_key_space(row)
 
-            # TODO handle the formatting of ISBN somehow
+            # handle the formatting of ISBN to mangle to digit only
             # ="0553213105" and ="9780553213102" instead of just numbers
             isbn_dict = fix_isbn(unspaced_dict)
-
             
             # handle the formatting of dates from 2020/02/27 to 2020-02-27
             date_dict = format_dates(isbn_dict)
