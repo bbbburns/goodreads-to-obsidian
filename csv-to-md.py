@@ -17,6 +17,7 @@
 
 import csv
 from string import Template
+import datetime
 
 def remove_key_space(spaced_dict):
     # print("We got in this spaced dict")
@@ -26,6 +27,36 @@ def remove_key_space(spaced_dict):
     # print("Here is the dict after a fix")
     # print(unspaced_dict)
     return unspaced_dict
+
+def format_dates(slash_dict):
+    format = '%Y/%m/%d'
+
+    date_read = slash_dict['DateRead']
+    date_added = slash_dict['DateAdded']
+    print('This is the date read string')
+    print(date_read)
+    print('This is the date added string')
+    print(date_added)
+
+    #TODO - just two repeated statements - could be a function or loop through values
+    if date_read:
+      print("Date read was present. Fixing it.")
+      datetime_read = datetime.datetime.strptime(date_read, format)
+      slash_dict['DateRead'] = datetime_read.date()
+      #print(datetime_read.date())
+    else:
+      print("Date read was false - just leaving it alone")
+
+
+    if date_added:
+      print("Date added was present. Fixing it.")
+      datetime_added = datetime.datetime.strptime(date_added, format)
+      slash_dict['DateAdded'] = datetime_added.date()
+      #print(datetime_added.date())
+    else:
+      print("Date added was false - just leaving it alone")
+    
+    return slash_dict
 
 # handle the called row - replacing the text in template with Template safe_substitute
 def format_note(book_dict, template_string):
@@ -62,17 +93,20 @@ def main():
         reader = csv.DictReader(csv_file)
         for row in reader:
             # print(row['Author'], row['Title'], row['My Rating'])
-            # Now I'm looping through EVERY row
+            # Now I'm looping through EVERY row, where each row is a book
             # Is it better to write my .md file out from within this loop
             # or should I build a data structure up, then do the writing later?
             # I think it's better to write one file at a time. See progress.
 
-            # I could build a dictionary RIGHT HERE that doesn't have spaces and pass it
-            fixed_dict = remove_key_space(row)
+            # Build a dictionary RIGHT HERE that doesn't have spaces and pass it
+            unspaced_dict = remove_key_space(row)
 
             # TODO handle the formatting of ISBN somehow
-            # TODO handle the formatting of dates            
-            book_md = format_note(fixed_dict, template_string)
+            
+            # handle the formatting of dates
+            date_dict = format_dates(unspaced_dict)
+
+            book_md = format_note(date_dict, template_string)
             
             # TODO write out the replaced text into a .md file
 
