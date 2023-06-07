@@ -130,6 +130,9 @@ def main():
             
             # handle the formatting of dates from 2020/02/27 to 2020-02-27
             date_dict = format_dates(isbn_dict)
+            
+            # TODO take in title from goodreads format and split out title (series, #number)
+            # example goodreads title: "Rhythm of War (The Stormlight Archive, #4)"
 
             book_md = format_note(date_dict, template_string)
             
