@@ -18,6 +18,7 @@
 import csv
 from string import Template
 import datetime
+import re
 
 def remove_key_space(spaced_dict):
     # Handle keys in the mapping that have spaces
@@ -130,6 +131,16 @@ def main():
             
             # handle the formatting of dates from 2020/02/27 to 2020-02-27
             date_dict = format_dates(isbn_dict)
+            
+            # convert series title to vals
+            # Book Title (Series Name, #1)
+            match = re.search(r"(.*) \((.*),.*#(.*)\)", date_dict['Title'])
+            if match:
+              print("This title is a series")
+              print(match.group(0))
+              print(match.group(1))
+              print(match.group(2))
+              print(match.group(3))
 
             book_md = format_note(date_dict, template_string)
             
