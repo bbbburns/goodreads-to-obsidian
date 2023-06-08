@@ -21,14 +21,10 @@ import datetime
 import re
 
 def remove_key_space(spaced_dict):
-    # Handle keys in the mapping that have spaces
+    # Handle keys in the mapping to remove spaces
     # 'Exclusive Shelf': 'read', 'My Review': 'Sample Text'
-    # print("We got in this spaced dict")
-    # print(spaced_dict)
     # do some fixing courtesy of https://stackoverflow.com/questions/35758566/remove-space-from-dictionary-keys#35758583
     unspaced_dict = {k.translate({32: None}): v for k, v in spaced_dict.items()}
-    # print("Here is the dict after a fix")
-    # print(unspaced_dict)
     return unspaced_dict
 
 def format_dates(slash_dict):
@@ -36,10 +32,6 @@ def format_dates(slash_dict):
 
     date_read = slash_dict['DateRead']
     date_added = slash_dict['DateAdded']
-    #print('This is the date read string')
-    #print(date_read)
-    #print('This is the date added string')
-    #print(date_added)
 
     #TODO - just two repeated statements - could be a function or loop through values
     # It seems like a dictionary translate or some other pythonic way exists to do this
@@ -63,7 +55,7 @@ def format_dates(slash_dict):
     return slash_dict
 
 def fix_isbn(isbn_dict):
-    # Strip out any non-string values from the ISBN numbers
+    # Strip out any non-digit values from the ISBN numbers
     # I could validate the count or checksum, but assume goodreads does
     if isbn_dict['ISBN']:
       # print("ISBN 10 value found " + isbn_dict['ISBN'])
@@ -80,10 +72,10 @@ def fix_isbn(isbn_dict):
       isbn_dict['ISBN13'] = isbn13
     return isbn_dict
 
-# handle the called row - replacing the text in template with Template safe_substitute
+# Replace the text in template with Template safe_substitute
 def format_note(book_dict, template_string):
-    print("In format_note")
-    print(book_dict)
+    # print("In format_note")
+    # print(book_dict)
     # print(template_string)
 
     template = Template(template_string)
@@ -92,7 +84,6 @@ def format_note(book_dict, template_string):
     print("This is what your Markdown will look like")
     print(book_md)
     return book_md
-
 
 def main():
     template_path = "book.md.Template"
@@ -109,12 +100,6 @@ def main():
     with open(csv_path, newline='') as csv_file:
         reader = csv.DictReader(csv_file)
         for row in reader:
-            # print(row['Author'], row['Title'], row['My Rating'])
-            # Now I'm looping through EVERY row, where each row is a book
-            # Is it better to write my .md file out from within this loop
-            # or should I build a data structure up, then do the writing later?
-            # I think it's better to write one file at a time. See progress.
-            
             #check count of rows just to be SURE. 24?
             # had one row of bad data from goodreads
             if len(row) != 24:
@@ -136,13 +121,13 @@ def main():
             # Book Title (Series Name, #1)
             match = re.search(r"(.*) \((.*),.*#(.*)\)", date_dict['Title'])
             if match:
-              print("This title is a series")
-              print(match.group(0))
-              print(match.group(1))
+              #print("This title is a series")
+              #print(match.group(0))
+              #print(match.group(1))
               date_dict['Title'] = match.group(1)
-              print(match.group(2))
+              #print(match.group(2))
               date_dict['Series'] = match.group(2)
-              print(match.group(3))
+              #print(match.group(3))
               date_dict['SeriesNum'] = match.group(3)
             else:
               date_dict['Series'] = ""
