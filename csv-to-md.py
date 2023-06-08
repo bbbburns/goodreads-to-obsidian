@@ -139,11 +139,17 @@ def main():
               print("This title is a series")
               print(match.group(0))
               print(match.group(1))
+              date_dict['Title'] = match.group(1)
               print(match.group(2))
+              date_dict['Series'] = match.group(2)
               print(match.group(3))
+              date_dict['SeriesNum'] = match.group(3)
+            else:
+              date_dict['Series'] = ""
+              date_dict['SeriesNum'] = ""
 
             book_md = format_note(date_dict, template_string)
-            
+
             # TODO write out the replaced text into a .md file
 
 if __name__ == '__main__':

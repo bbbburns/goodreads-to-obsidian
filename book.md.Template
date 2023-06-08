@@ -3,8 +3,8 @@ tags: book, media
 publish: false
 title: $Title
 series:
-    series_name:
-    series_num:
+    series_name: $Series
+    series_num: $SeriesNum
 author: [${Author}]
 status: $ExclusiveShelf
 isbn: $ISBN
