@@ -85,6 +85,13 @@ def format_note(book_dict, template_string):
     print(book_md)
     return book_md
 
+def write_book_md(title, book_md):
+    book_path = title + ".md"
+    print("Book md file path: " + book_path)
+    with open(book_path, "w") as book_file:
+      book_file.writelines(book_md)
+      print("File Write Succeeded?")
+
 def main():
     template_path = "book.md.Template"
     csv_path = "example/goodreads_export_example.csv"
@@ -136,6 +143,8 @@ def main():
             book_md = format_note(date_dict, template_string)
 
             # TODO write out the replaced text into a .md file
+            title = date_dict['Title']
+            write_book_md(title, book_md)
 
 if __name__ == '__main__':
     main()
