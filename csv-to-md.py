@@ -1,19 +1,19 @@
 # Author: Jason Burns
 # Purpose: Take a Goodreads CSV and format each row as a separate Markdown file for use in Obsidian
-# Probably should make the template extensible at some point later.
 
 ''' 
  Steps
  Read in the CSV file to a data structure
- Read in a template (Template is easier than Jinja2 for my money)
+ Read in a template (Template is easier for me than Jinja2 for now)
  Pull out the important pieces we need for each row
   Into some dictionary
-  cleanup the data
+  cleanup the data (ugh - so much cleanup)
  Output each row as a new file using the desired structure
   Substite the data in the template with the book data
-  write out the file
+  write out the file (more cleanup needed again)
  Place the resulting files somewhere safe - user specified
    Consider placing them straight into your vault if you feel lucky
+   Probably don't do this.
 '''
 
 import argparse
@@ -45,21 +45,19 @@ def format_dates(slash_dict):
       datetime_read = datetime.datetime.strptime(date_read, format)
       slash_dict['DateRead'] = datetime_read.date()
       #print(datetime_read.date())
-    #else:
-      #print("Date read was false - just leaving it alone")
 
     if date_added:
       #print("Date added was present. Fixing it.")
       datetime_added = datetime.datetime.strptime(date_added, format)
       slash_dict['DateAdded'] = datetime_added.date()
       #print(datetime_added.date())
-    #else:
-      #print("Date added was false - just leaving it alone")
+
     return slash_dict
 
 def fix_isbn(isbn_dict):
     # Strip out any non-digit values from the ISBN numbers
     # I could validate the count or checksum, but assume goodreads does
+    # TODO same problem as above - doing the same thing twice
     if isbn_dict['ISBN']:
       # print("ISBN 10 value found " + isbn_dict['ISBN'])
       # Join all the digit values. Ignore spaces, dashes, whatever
@@ -84,8 +82,6 @@ def format_note(book_dict, template_string):
     return book_md
 
 def parse_series(title):
-    # Take in the title string
-
     # convert series title to vals
     # Book Title (Series Name, #1)
     # this might be harder than I thought: 
@@ -94,6 +90,10 @@ def parse_series(title):
     # Edgedancer (The Stormlight Archive #2.5)
     # Remembrance of Earth's Past: The Three-Body Trilogy (Remembrance of Earth's Past #1-3)
     # The System of the World (The Baroque Cycle, Vol. 3, Book 3)
+    
+    # Assume these are blank in case they don't get set later on
+    series = ""
+    series_num = ""
 
     # normal: Title (Name, #1)
     match_normal = re.search(r"(.*) \((.*),.*#(.*)\)", title)
@@ -108,18 +108,16 @@ def parse_series(title):
     match_comp = re.search(r"(.*) \((.*),.*#(.*);", title)
 
     if match_comp:
+      # Have to match this first, because it's a subset of normal
       #print(f"COMPLEX TITLE FOUND: {title}")
       title = match_comp.group(1)
       series = match_comp.group(2)
       series_num = match_comp.group(3)
     elif match_normal:
+      # have to match this AFTER comp
       #print("This title is a normal series in book")
-      #print(match.group(0))
-      #print(match.group(1))
       title = match_normal.group(1)
-      #print(match.group(2))
       series = match_normal.group(2)
-      #print(match.group(3))
       series_num = match_normal.group(3)
     elif match_space:
       #print("This title is a spaced series")
@@ -131,23 +129,27 @@ def parse_series(title):
       title = match_vol.group(1)
       series = match_vol.group(2)
       series_num = match_vol.group(3)
-    else:
+    #else:
       #print("I don't think this is a series")
-      series = ""
-      series_num = ""
 
     # Return the Title, Series, and Num
     # Series and num could be blank
     return title, series, series_num
 
 def write_book_md(title, book_md, file_path):
-    #TODO Need to handle / in title. Replace with - ?
+    #TODO Need to handle special characters in title. Replace with - 
+    # following are invalid chars in obsidian files
+    # []:\/^|#
+    # oh.. 30% of my book titles contain invalid characters.. mostly colons
+    invalid_name = re.search(r"[]\\\/\^\|#\[:]", title)
+    if invalid_name:
+       print(f"{title} has invalid characters")
     book_file_name = title + ".md"
     print(f"Book file name is: {book_file_name}")
     book_path = Path(file_path, book_file_name)
     print("Book md file path: " + str(book_path))
-    with open(book_path, "w") as book_file:
-      book_file.writelines(book_md)
+    #with open(book_path, "w") as book_file:
+      #book_file.writelines(book_md)
 
 def main():
     template_path = "book.md.Template"
