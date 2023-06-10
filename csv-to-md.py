@@ -79,9 +79,66 @@ def fix_isbn(isbn_dict):
 def format_note(book_dict, template_string):
     template = Template(template_string)
     book_md = template.safe_substitute(**book_dict)
-    #print("This is what your Markdown will look like")
-    #print(book_md)
+    print("This is what your Markdown will look like")
+    print(book_md)
     return book_md
+
+def parse_series(title):
+    # Take in the title string
+
+    # convert series title to vals
+    # Book Title (Series Name, #1)
+    # this might be harder than I thought: 
+    # Guards! Guards! (Discworld, #8; City Watch, #1)
+    # Auberon (The Expanse, #8.5)
+    # Edgedancer (The Stormlight Archive #2.5)
+    # Remembrance of Earth's Past: The Three-Body Trilogy (Remembrance of Earth's Past #1-3)
+    # The System of the World (The Baroque Cycle, Vol. 3, Book 3)
+
+    # normal: Title (Name, #1)
+    match_normal = re.search(r"(.*) \((.*),.*#(.*)\)", title)
+
+    # space: Title (Name #1)
+    match_space = re.search(r"(.*) \((.*) #(.*)\)", title)
+
+    # vol: Title (Series, Vol. 1)
+    match_vol = re.search(r"(.*) \((.*),.*Vol. (.*),", title)
+
+    # comp:  Title (Name1, #1; Name 2, #2) - but take name1 only
+    match_comp = re.search(r"(.*) \((.*),.*#(.*);", title)
+
+    if match_comp:
+      #print(f"COMPLEX TITLE FOUND: {title}")
+      title = match_comp.group(1)
+      series = match_comp.group(2)
+      series_num = match_comp.group(3)
+    elif match_normal:
+      #print("This title is a normal series in book")
+      #print(match.group(0))
+      #print(match.group(1))
+      title = match_normal.group(1)
+      #print(match.group(2))
+      series = match_normal.group(2)
+      #print(match.group(3))
+      series_num = match_normal.group(3)
+    elif match_space:
+      #print("This title is a spaced series")
+      title = match_space.group(1)
+      series = match_space.group(2)
+      series_num = match_space.group(3)
+    elif match_vol:
+      #print("This title is a vol series")
+      title = match_vol.group(1)
+      series = match_vol.group(2)
+      series_num = match_vol.group(3)
+    else:
+      #print("I don't think this is a series")
+      series = ""
+      series_num = ""
+
+    # Return the Title, Series, and Num
+    # Series and num could be blank
+    return title, series, series_num
 
 def write_book_md(title, book_md, file_path):
     book_file_name = title + ".md"
@@ -142,36 +199,19 @@ def main():
             date_dict = format_dates(isbn_dict)
 
             # convert series title to vals
-            # Book Title (Series Name, #1)
-            # this might be harder than I thought: 
-            # Guards! Guards! (Discworld, #8; City Watch, #1)
-            # Auberon (The Expanse, #8.5)
-            # Edgedancer (The Stormlight Archive #2.5)
-            # Remembrance of Earth's Past: The Three-Body Trilogy (Remembrance of Earth's Past #1-3)
-            # The System of the World (The Baroque Cycle, Vol. 3, Book 3)
-            # TODO build function that parses series name and num
-            # from the first '(' to '#' strip out spaces
-            # from the '#' to ')' or ';'
-            match = re.search(r"(.*) \((.*),.*#(.*)\)", date_dict['Title'])
-            if match:
-              print(f"This title is a series in book {count}")
-              #print(match.group(0))
-              #print(match.group(1))
-              date_dict['Title'] = match.group(1)
-              #print(match.group(2))
-              date_dict['Series'] = match.group(2)
-              #print(match.group(3))
-              date_dict['SeriesNum'] = match.group(3)
-            else:
-              date_dict['Series'] = ""
-              date_dict['SeriesNum'] = ""
+            series_tuple = parse_series(date_dict['Title'])
+            #print("Series Tuple Follows")
+            print(series_tuple)
+            date_dict['Title'] = series_tuple[0]
+            date_dict['Series'] = series_tuple[1]
+            date_dict['SeriesNum'] = series_tuple[2]
 
             book_md = format_note(date_dict, template_string)
 
             # Write out the replaced text into a $Title.md file to path
             title = date_dict['Title']
             write_book_md(title, book_md, output_path)
-            print(f'We have written {count} books.')
+            print(f'We have written {count + 1} books.')
 
 if __name__ == '__main__':
     main()
