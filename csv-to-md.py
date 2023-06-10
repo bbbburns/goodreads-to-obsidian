@@ -141,13 +141,13 @@ def parse_series(title):
     return title, series, series_num
 
 def write_book_md(title, book_md, file_path):
+    #TODO Need to handle / in title. Replace with - ?
     book_file_name = title + ".md"
     print(f"Book file name is: {book_file_name}")
     book_path = Path(file_path, book_file_name)
     print("Book md file path: " + str(book_path))
-    #with open(book_path, "w") as book_file:
-    #  book_file.writelines(book_md)
-    #  print("File Write Succeeded?")
+    with open(book_path, "w") as book_file:
+      book_file.writelines(book_md)
 
 def main():
     template_path = "book.md.Template"
