@@ -8,17 +8,20 @@
  Read in a template (Template is easier than Jinja2 for my money)
  Pull out the important pieces we need for each row
   Into some dictionary
+  cleanup the data
  Output each row as a new file using the desired structure
   Substite the data in the template with the book data
   write out the file
- Place the resulting files somewhere safe - make user copy them?
-   Consider placing them straight into a vault folder?
+ Place the resulting files somewhere safe - user specified
+   Consider placing them straight into your vault if you feel lucky
 '''
 
+import argparse
 import csv
 from string import Template
 import datetime
 import re
+from pathlib import Path
 
 def remove_key_space(spaced_dict):
     # Handle keys in the mapping to remove spaces
@@ -38,7 +41,7 @@ def format_dates(slash_dict):
     # but I don't know it right now.
     # ALSO - I could just replace slash with dash but using datetime seems fun
     if date_read:
-      print("Date read was present. Fixing it.")
+      #print("Date read was present. Fixing it.")
       datetime_read = datetime.datetime.strptime(date_read, format)
       slash_dict['DateRead'] = datetime_read.date()
       #print(datetime_read.date())
@@ -46,7 +49,7 @@ def format_dates(slash_dict):
       #print("Date read was false - just leaving it alone")
 
     if date_added:
-      print("Date added was present. Fixing it.")
+      #print("Date added was present. Fixing it.")
       datetime_added = datetime.datetime.strptime(date_added, format)
       slash_dict['DateAdded'] = datetime_added.date()
       #print(datetime_added.date())
@@ -74,40 +77,54 @@ def fix_isbn(isbn_dict):
 
 # Replace the text in template with Template safe_substitute
 def format_note(book_dict, template_string):
-    # print("In format_note")
-    # print(book_dict)
-    # print(template_string)
-
     template = Template(template_string)
-
     book_md = template.safe_substitute(**book_dict)
-    print("This is what your Markdown will look like")
-    print(book_md)
+    #print("This is what your Markdown will look like")
+    #print(book_md)
     return book_md
 
-def write_book_md(title, book_md):
-    book_path = title + ".md"
-    print("Book md file path: " + book_path)
-    with open(book_path, "w") as book_file:
-      book_file.writelines(book_md)
-      print("File Write Succeeded?")
+def write_book_md(title, book_md, file_path):
+    book_file_name = title + ".md"
+    print(f"Book file name is: {book_file_name}")
+    book_path = Path(file_path, book_file_name)
+    print("Book md file path: " + str(book_path))
+    #with open(book_path, "w") as book_file:
+    #  book_file.writelines(book_md)
+    #  print("File Write Succeeded?")
 
 def main():
     template_path = "book.md.Template"
-    csv_path = "example/goodreads_export_example.csv"
+    #csv_path = "example/goodreads_export_example.csv"
+    output_path = ""
 
-    # probably make a parse template function
+    parser = argparse.ArgumentParser()
+    parser.add_argument("csv",
+                        help="Goodreads CSV export file to import")
+    parser.add_argument("--template",
+                        help="Book Markdown template file with $variables. Uses book.md.Template by default.")
+    parser.add_argument("--out",
+                        help="Output directory. Uses current dir as default.")
+    args = parser.parse_args()
+
+    csv_path = args.csv
+
+    if args.template:
+      print(f"template was specified: {args.template}")
+      template_path = args.template
+
+    if args.out:
+      print(f"output was specified: {args.out}")
+      output_path = args.out
+
+    # read in the default or specified template
     with open (template_path, newline='') as template_file:
         template_string = template_file.read()
-        print(template_string)
-
-    # Yeah - csv.DictReader is really what I'm after
-    # https://docs.python.org/3/library/csv.html
+        #print(template_string)
 
     with open(csv_path, newline='') as csv_file:
         reader = csv.DictReader(csv_file)
-        for row in reader:
-            #check count of rows just to be SURE. 24?
+        for count, row in enumerate(reader):
+            #check count of columns in this row just to be SURE. 24?
             # had one row of bad data from goodreads
             if len(row) != 24:
                 print("Something went wrong. We should skip this book.")
@@ -120,15 +137,24 @@ def main():
             # handle the formatting of ISBN to mangle to digit only
             # ="0553213105" and ="9780553213102" instead of just numbers
             isbn_dict = fix_isbn(unspaced_dict)
-            
+
             # handle the formatting of dates from 2020/02/27 to 2020-02-27
             date_dict = format_dates(isbn_dict)
-            
+
             # convert series title to vals
             # Book Title (Series Name, #1)
+            # this might be harder than I thought: 
+            # Guards! Guards! (Discworld, #8; City Watch, #1)
+            # Auberon (The Expanse, #8.5)
+            # Edgedancer (The Stormlight Archive #2.5)
+            # Remembrance of Earth's Past: The Three-Body Trilogy (Remembrance of Earth's Past #1-3)
+            # The System of the World (The Baroque Cycle, Vol. 3, Book 3)
+            # TODO build function that parses series name and num
+            # from the first '(' to '#' strip out spaces
+            # from the '#' to ')' or ';'
             match = re.search(r"(.*) \((.*),.*#(.*)\)", date_dict['Title'])
             if match:
-              #print("This title is a series")
+              print(f"This title is a series in book {count}")
               #print(match.group(0))
               #print(match.group(1))
               date_dict['Title'] = match.group(1)
@@ -142,9 +168,10 @@ def main():
 
             book_md = format_note(date_dict, template_string)
 
-            # TODO write out the replaced text into a .md file
+            # Write out the replaced text into a $Title.md file to path
             title = date_dict['Title']
-            write_book_md(title, book_md)
+            write_book_md(title, book_md, output_path)
+            print(f'We have written {count} books.')
 
 if __name__ == '__main__':
     main()
