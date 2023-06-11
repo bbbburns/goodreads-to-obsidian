@@ -139,11 +139,11 @@ def parse_series(title):
 def write_book_md(title, book_md, file_path):
     #TODO Need to handle special characters in title. Replace with - 
     # following are invalid chars in obsidian files
-    # []:\/^|#
+    # []:\/^|# and windows <>?"*
     # oh.. 30% of my book titles contain invalid characters.. mostly colons
-    invalid_name = re.search(r"[]\\\/\^\|#\[:]", title)
+    invalid_name = re.search(r"[]\\\/\^\|#\[\?\*\<\>\":]", title)
     if invalid_name:
-       print(f"{title} has invalid characters")
+       print(f"{title} | {len(title)} | has invalid characters")
     book_file_name = title + ".md"
     print(f"Book file name is: {book_file_name}")
     book_path = Path(file_path, book_file_name)
