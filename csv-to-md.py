@@ -141,6 +141,11 @@ def write_book_md(title, book_md, file_path):
     # following are invalid chars in obsidian files
     # []:\/^|# and windows <>?"*
     # oh.. 30% of my book titles contain invalid characters.. mostly colons
+
+    # So handle colons first. 
+    # TODO partition leads to duplicate titles! Not fully baked yet.
+    title_tuple = title.partition(":")
+    title = title_tuple[0]
     invalid_name = re.search(r"[]\\\/\^\|#\[\?\*\<\>\":]", title)
     if invalid_name:
        print(f"{title} | {len(title)} | has invalid characters")
