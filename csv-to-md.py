@@ -136,30 +136,116 @@ def parse_series(title):
     # Series and num could be blank
     return title, series, series_num
 
-def write_book_md(title, book_md, file_path):
+def return_sub_words(sub_title, sub_len):
+  new_sub = ""
+  sub_words = re.findall(r'\w+', sub_title)
+  sub_words_len = len(sub_words)
+
+  print(f"sub words length {sub_words_len}")
+  for count, word in enumerate(sub_words):
+      print(f"Count is {count} and word is {word}")
+      if count < int(sub_len):
+        new_sub += word
+        print(f"Adding word {count + 1} to make '{new_sub}'")
+        if count < int(sub_len) - 1 and count < sub_words_len - 1:
+          # Add spaces to all but the final word
+          new_sub += " "
+          print(f"Adding space {count + 1} to make '{new_sub}'")
+      elif count >= int(sub_len):
+        print(f"Count {count} must be higher than sub length {int(sub_len)}, so breaking")
+        break
+  return new_sub
+
+'''  
+def fix_subtitle(title_tuple):
+   base_title = title_tuple[0]
+   sub_title = title_tuple[2].lstrip()
+   new_sub = ""
+
+   if sub_len == "a":
+      # Add the base and sub together
+      title = base_title + " - " + sub_title
+   elif sub_len.isdigit():
+      print(f"Sub length {sub_len} is a digit so including that many words.")
+      print(f"Digit value of sub_len is {int(sub_len)}")
+      new_sub = return_sub_words(sub_title, sub_len)
+      title = base_title + " - " + new_sub
+   return title
+'''
+
+def parse_title(full_title):
+    # take in a full title string, which might include a subtitle separated by :
+    # return the stripped down base title
+    # return the short subtitle for use in the .md file title name
+    # short subtitle length is 0 if no subtitle present
+    # otherwise short subtitle length is set by global sub_len
+
+    title_tuple = full_title.partition(":")
+
+    #if we didn't find a subtitle, stop processing
+    if not title_tuple[1]:
+       #no subtitle - just return the base
+       print("No subtitle found. Continuing.")
+       return full_title, ""
+    
+    print("We found a subtitle and we want to keep it!")
+
+    # There must be a subtitle - so strip out the base title for alias
+    base_title = title_tuple[0]
+
+    # we're getting the full sub - might be useful later if sub_len is ALL
+    full_sub = title_tuple[2].lstrip()
+
+    # need to handle sub_len value parsing here
+    if sub_len == "a":
+       # just set the short sub to the full sub
+       print("We want all of the subtitle")
+       short_sub = full_sub
+    elif sub_len.isdigit() and int(sub_len) > 0:
+       # We want a positive number of subtitle words
+       print(f"We want {sub_len} words of the subtitle")
+       short_sub = return_sub_words(full_sub, sub_len)
+    elif sub_len.isdigit() and int(sub_len) == 0:
+       # We want to drop the subtitle text
+       print("We want to drop the subtitle")
+       short_sub = ""
+
+    return base_title, short_sub
+
+def write_book_md(title, author, book_md):
     #TODO Need to handle special characters in title. Replace with - 
     # following are invalid chars in obsidian files
     # []:\/^|# and windows <>?"*
-    # oh.. 30% of my book titles contain invalid characters.. mostly colons
+    book_file_name = title + " - " + author + ".md"
 
-    # So handle colons first. 
-    # TODO partition leads to duplicate titles! Not fully baked yet.
-    title_tuple = title.partition(":")
-    title = title_tuple[0]
-    invalid_name = re.search(r"[]\\\/\^\|#\[\?\*\<\>\":]", title)
+    invalid_name = re.search(r"[]\\\/\^\|#\[\?\*\<\>\":]", book_file_name)
     if invalid_name:
-       print(f"{title} | {len(title)} | has invalid characters")
-    book_file_name = title + ".md"
+       print(f"Skipping invalid {book_file_name} | {len(book_file_name)} | has invalid characters")
+       return
+    
     print(f"Book file name is: {book_file_name}")
-    book_path = Path(file_path, book_file_name)
+    book_path = Path(output_path, book_file_name)
     print("Book md file path: " + str(book_path))
-    #with open(book_path, "w") as book_file:
-      #book_file.writelines(book_md)
+
+    # before we write the file, let's check to make sure we don't overwrite something
+    if book_path.is_file():
+       print(f"Skipping duplicate {book_path} because file already exists.")
+    elif dry_run == False:
+       with open(book_path, "w") as book_file:
+          book_file.writelines(book_md)
 
 def main():
+    global template_path 
     template_path = "book.md.Template"
     #csv_path = "example/goodreads_export_example.csv"
+    global output_path 
     output_path = ""
+    global sub_len 
+    sub_len = "0"
+    global dry_run
+    dry_run = False
+    global alias
+    alias = False
 
     parser = argparse.ArgumentParser()
     parser.add_argument("csv",
@@ -168,6 +254,12 @@ def main():
                         help="Book Markdown template file with $variables. Uses book.md.Template by default.")
     parser.add_argument("--out",
                         help="Output directory. Uses current dir as default.")
+    parser.add_argument("--sub_len",
+                        help="Subtitle length for file name. 0 = none (default). a = ALL subtitle words. 1+ = num words long.")
+    parser.add_argument("--dry", action="store_true",
+                        help="If passed, perform a dry run and skip the file write steps.")
+    parser.add_argument("--alias", action="store_true",
+                        help="Add the base title as frontmatter alias when subtitle exists.")
     args = parser.parse_args()
 
     csv_path = args.csv
@@ -179,6 +271,26 @@ def main():
     if args.out:
       print(f"output was specified: {args.out}")
       output_path = args.out
+
+    if args.sub_len:
+       print(f"Subtitle length {args.sub_len} was passed.")
+       sub_len = args.sub_len
+       if sub_len.isdigit() and int(sub_len) >= 0:
+          print(f"Sub length set to valid numeric value {sub_len}")
+       elif sub_len == "a":
+          print("Sub length set to a for ALL")
+       else:
+          print(f"Invalid sub_len {sub_len}")
+          # do I mean system exit here? How do I do that again?
+          return 1
+
+    if args.dry:
+       print("Dry Run. Skipping write!")
+       dry_run = True
+
+    if args.alias:
+       print("Alias set to true. Adding frontmatter alias if a subtitle exists.")
+       alias = True
 
     # read in the default or specified template
     with open (template_path, newline='') as template_file:
@@ -208,16 +320,36 @@ def main():
             # convert series title to vals
             series_tuple = parse_series(date_dict['Title'])
             #print("Series Tuple Follows")
-            print(series_tuple)
+            #print(series_tuple)
             date_dict['Title'] = series_tuple[0]
             date_dict['Series'] = series_tuple[1]
             date_dict['SeriesNum'] = series_tuple[2]
 
+            # TODO handle creating an alias if the title has a subtitle and alias is true
+            # Pass the full title to some function
+            # get back: the base title, the full subtitle, the short subtitle
+            # based on this - check if subtitle is present
+            # if present AND alias is true - set BaseTitle in frontmatter
+            # pass the title and shortsubtitle (if present) as the file name
+
+            base_title, short_sub = parse_title(date_dict['Title'])
+
+            if alias: 
+               print(f"Alias is true, setting to {base_title}")
+               date_dict['BaseTitle'] = base_title
+            else:
+               date_dict['BaseTitle'] = ""
+
             book_md = format_note(date_dict, template_string)
 
             # Write out the replaced text into a $Title.md file to path
-            title = date_dict['Title']
-            write_book_md(title, book_md, output_path)
+            if short_sub:
+               title = base_title + " - " + short_sub
+            else:
+               title = base_title
+
+            author = date_dict['Author']
+            write_book_md(title, author, book_md)
             print(f'We have written {count + 1} books.')
 
 if __name__ == '__main__':
