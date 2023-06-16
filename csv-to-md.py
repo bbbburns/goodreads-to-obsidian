@@ -5,9 +5,10 @@
  Steps
  Read in the CSV file to a data structure
  Read in a template (Template is easier for me than Jinja2 for now)
- Pull out the important pieces we need for each row
+ Pull out the important pieces we need for each row / book
   Into some dictionary
   cleanup the data (ugh - so much cleanup)
+  EVEN MORE CLEANUP
  Output each row as a new file using the desired structure
   Substite the data in the template with the book data
   write out the file (more cleanup needed again)
@@ -213,14 +214,17 @@ def parse_title(full_title):
     return base_title, short_sub
 
 def write_book_md(title, author, book_md):
-    #TODO Need to handle special characters in title. Replace with - 
+    # handle special characters in title. Replace with "" 
     # following are invalid chars in obsidian files
     # []:\/^|# and windows <>?"*
+    # : for subtitle should have been handled already, so ditch any new :
     book_file_name = title + " - " + author + ".md"
 
     invalid_name = re.search(r"[]\\\/\^\|#\[\?\*\<\>\":]", book_file_name)
     if invalid_name:
-       print(f"Skipping invalid {book_file_name} | {len(book_file_name)} | has invalid characters")
+       print(f"Rewriting invalid {book_file_name} | {len(book_file_name)} | it has invalid characters")
+       book_file_name = re.sub(r"[]\\\/\^\|#\[\?\*\<\>\":]", "", book_file_name)
+       print(f"new non-invalid name is {book_file_name}")
        return
     
     print(f"Book file name is: {book_file_name}")
@@ -254,6 +258,8 @@ def main():
                         help="Book Markdown template file with $variables. Uses book.md.Template by default.")
     parser.add_argument("--out",
                         help="Output directory. Uses current dir as default.")
+    # TODO I'd really like to add a "c" or "e" for custom or edit where the user is prompted to choose the disposition
+    # for every book with a subtitle.
     parser.add_argument("--sub_len",
                         help="Subtitle length for file name. 0 = none (default). a = ALL subtitle words. 1+ = num words long.")
     parser.add_argument("--dry", action="store_true",
@@ -342,7 +348,8 @@ def main():
 
             book_md = format_note(date_dict, template_string)
 
-            # Write out the replaced text into a $Title.md file to path
+            # Write out the replaced text into a $Title - $Author.md file to path
+            # use the subtitle if this book has one and we set it to something
             if short_sub:
                title = base_title + " - " + short_sub
             else:
