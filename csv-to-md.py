@@ -137,7 +137,7 @@ def parse_series(title):
     # Series and num could be blank
     return title, series, series_num
 
-def return_sub_words(sub_title, sub_len):
+def return_sub_words(sub_title, my_sub_len):
   new_sub = ""
   sub_words = re.findall(r'\w+', sub_title)
   sub_words_len = len(sub_words)
@@ -145,34 +145,27 @@ def return_sub_words(sub_title, sub_len):
   print(f"sub words length {sub_words_len}")
   for count, word in enumerate(sub_words):
       print(f"Count is {count} and word is {word}")
-      if count < int(sub_len):
+      if count < int(my_sub_len):
         new_sub += word
         print(f"Adding word {count + 1} to make '{new_sub}'")
-        if count < int(sub_len) - 1 and count < sub_words_len - 1:
+        if count < int(my_sub_len) - 1 and count < sub_words_len - 1:
           # Add spaces to all but the final word
           new_sub += " "
           print(f"Adding space {count + 1} to make '{new_sub}'")
-      elif count >= int(sub_len):
-        print(f"Count {count} must be higher than sub length {int(sub_len)}, so breaking")
+      elif count >= int(my_sub_len):
+        print(f"Count {count} must be higher than sub length {int(my_sub_len)}, so breaking")
         break
   return new_sub
 
-'''  
-def fix_subtitle(title_tuple):
-   base_title = title_tuple[0]
-   sub_title = title_tuple[2].lstrip()
-   new_sub = ""
+def get_custom_sub(base_title, full_sub):
+   # Take in the base title and full_sub and request custom_sub_len from user
+   # return the desired sub_len
+   print(f"Current File Name (Title - [Subtitle]): ({base_title} - [{full_sub}])")
 
-   if sub_len == "a":
-      # Add the base and sub together
-      title = base_title + " - " + sub_title
-   elif sub_len.isdigit():
-      print(f"Sub length {sub_len} is a digit so including that many words.")
-      print(f"Digit value of sub_len is {int(sub_len)}")
-      new_sub = return_sub_words(sub_title, sub_len)
-      title = base_title + " - " + new_sub
-   return title
-'''
+   custom_sub_len = input("Enter desired subtitle length: [0] (drop sub), [1-n] (1-n words), [a] all.\n")
+   # TODO need to validate the digit
+
+   return custom_sub_len
 
 def parse_title(full_title):
     # take in a full title string, which might include a subtitle separated by :
@@ -180,7 +173,8 @@ def parse_title(full_title):
     # return the short subtitle for use in the .md file title name
     # short subtitle length is 0 if no subtitle present
     # otherwise short subtitle length is set by global sub_len
-
+    
+    my_sub_len = "0"
     title_tuple = full_title.partition(":")
 
     #if we didn't find a subtitle, stop processing
@@ -197,16 +191,23 @@ def parse_title(full_title):
     # we're getting the full sub - might be useful later if sub_len is ALL
     full_sub = title_tuple[2].lstrip()
 
+    # If the global sub_len is set to custom, get the action to take
+    # otherwise take the global action
+    if sub_len == "c":
+       my_sub_len = get_custom_sub(base_title, full_sub)
+    else:
+       my_sub_len = sub_len
+
     # need to handle sub_len value parsing here
-    if sub_len == "a":
+    if my_sub_len == "a":
        # just set the short sub to the full sub
        print("We want all of the subtitle")
        short_sub = full_sub
-    elif sub_len.isdigit() and int(sub_len) > 0:
+    elif my_sub_len.isdigit() and int(my_sub_len) > 0:
        # We want a positive number of subtitle words
-       print(f"We want {sub_len} words of the subtitle")
-       short_sub = return_sub_words(full_sub, sub_len)
-    elif sub_len.isdigit() and int(sub_len) == 0:
+       print(f"We want {my_sub_len} words of the subtitle")
+       short_sub = return_sub_words(full_sub, my_sub_len)
+    elif my_sub_len.isdigit() and int(my_sub_len) == 0:
        # We want to drop the subtitle text
        print("We want to drop the subtitle")
        short_sub = ""
@@ -258,10 +259,8 @@ def main():
                         help="Book Markdown template file with $variables. Uses book.md.Template by default.")
     parser.add_argument("--out",
                         help="Output directory. Uses current dir as default.")
-    # TODO I'd really like to add a "c" or "e" for custom or edit where the user is prompted to choose the disposition
-    # for every book with a subtitle.
     parser.add_argument("--sub_len",
-                        help="Subtitle length for file name. 0 = none (default). a = ALL subtitle words. 1+ = num words long.")
+                        help="Subtitle length for file name. 0 = none (default). a = ALL subtitle words. 1+ = num words long. c = custom")
     parser.add_argument("--dry", action="store_true",
                         help="If passed, perform a dry run and skip the file write steps.")
     parser.add_argument("--alias", action="store_true",
@@ -285,6 +284,8 @@ def main():
           print(f"Sub length set to valid numeric value {sub_len}")
        elif sub_len == "a":
           print("Sub length set to a for ALL")
+       elif sub_len == "c":
+          print("We're going to prompt you for the length whenever a sub is found.")
        else:
           print(f"Invalid sub_len {sub_len}")
           # do I mean system exit here? How do I do that again?
