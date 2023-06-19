@@ -142,18 +142,18 @@ def return_sub_words(sub_title, my_sub_len):
   sub_words = re.findall(r'\w+', sub_title)
   sub_words_len = len(sub_words)
 
-  print(f"sub words length {sub_words_len}")
+  #print(f"sub words length {sub_words_len}")
   for count, word in enumerate(sub_words):
-      print(f"Count is {count} and word is {word}")
+      #print(f"Count is {count} and word is {word}")
       if count < int(my_sub_len):
         new_sub += word
-        print(f"Adding word {count + 1} to make '{new_sub}'")
+        #print(f"Adding word {count + 1} to make '{new_sub}'")
         if count < int(my_sub_len) - 1 and count < sub_words_len - 1:
           # Add spaces to all but the final word
           new_sub += " "
-          print(f"Adding space {count + 1} to make '{new_sub}'")
+          #print(f"Adding space {count + 1} to make '{new_sub}'")
       elif count >= int(my_sub_len):
-        print(f"Count {count} must be higher than sub length {int(my_sub_len)}, so breaking")
+        #print(f"Count {count} must be higher than sub length {int(my_sub_len)}, so breaking")
         break
   return new_sub
 
@@ -163,7 +163,7 @@ def get_custom_sub(base_title, full_sub):
    print(f"Current File Name (Title - [Subtitle]): ({base_title} - [{full_sub}])")
 
    custom_sub_len = input("Enter desired subtitle length: [0] (drop sub), [1-n] (1-n words), [a] all.\n")
-   # TODO need to validate the digit
+   # TODO need to validate the input and perhaps preview result.
 
    return custom_sub_len
 
@@ -180,10 +180,10 @@ def parse_title(full_title):
     #if we didn't find a subtitle, stop processing
     if not title_tuple[1]:
        #no subtitle - just return the base
-       print("No subtitle found. Continuing.")
+       #print("No subtitle found. Continuing.")
        return full_title, ""
     
-    print("We found a subtitle and we want to keep it!")
+    #print("We found a subtitle and have to handle it.")
 
     # There must be a subtitle - so strip out the base title for alias
     base_title = title_tuple[0]
@@ -201,15 +201,15 @@ def parse_title(full_title):
     # need to handle sub_len value parsing here
     if my_sub_len == "a":
        # just set the short sub to the full sub
-       print("We want all of the subtitle")
+       #print("We want all of the subtitle")
        short_sub = full_sub
     elif my_sub_len.isdigit() and int(my_sub_len) > 0:
        # We want a positive number of subtitle words
-       print(f"We want {my_sub_len} words of the subtitle")
+       #print(f"We want {my_sub_len} words of the subtitle")
        short_sub = return_sub_words(full_sub, my_sub_len)
     elif my_sub_len.isdigit() and int(my_sub_len) == 0:
        # We want to drop the subtitle text
-       print("We want to drop the subtitle")
+       #print("We want to drop the subtitle")
        short_sub = ""
 
     return base_title, short_sub
@@ -310,8 +310,7 @@ def main():
             #check count of columns in this row just to be SURE. 24?
             # had one row of bad data from goodreads
             if len(row) != 24:
-                print("Something went wrong. We should skip this book.")
-                print("Error was in " + row['Title'])
+                print(f"Something went wrong with the column count: Got {len(row)}, expected 24. We should skip {row['Title']}.")
                 continue
 
             # Build a dictionary RIGHT HERE that doesn't have spaces and pass it
