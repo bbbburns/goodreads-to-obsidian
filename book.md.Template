@@ -1,8 +1,8 @@
 ---
 tags: book, media
 publish: false
-title: $Title
-aliases: $BaseTitle
+title: "$Title"
+aliases: "$BaseTitle"
 series:
     series_name: $Series
     series_num: $SeriesNum

@@ -331,17 +331,28 @@ def main():
             date_dict['Series'] = series_tuple[1]
             date_dict['SeriesNum'] = series_tuple[2]
 
-            # TODO handle creating an alias if the title has a subtitle and alias is true
+            # TODO - convert <br/> to \n in the MyReview text
+            review_text = date_dict['MyReview']
+            if review_text and re.search(r"<br/>", review_text):
+               print(f"The text matched <br/> \n {review_text}")
+               fixed_text = re.sub(r"<br/>", "\n", review_text)
+               print(f"The new fixed review is:\n {fixed_text}")
+               date_dict['MyReview'] = fixed_text
+            
+            # handle creating an alias if the title has a subtitle and alias is true
             # Pass the full title to some function
-            # get back: the base title, the full subtitle, the short subtitle
+            # get back: the base title, and the short subtitle
             # based on this - check if subtitle is present
-            # if present AND alias is true - set BaseTitle in frontmatter
             # pass the title and shortsubtitle (if present) as the file name
 
-            base_title, short_sub = parse_title(date_dict['Title'])
+            full_title = date_dict['Title']
+            base_title, short_sub = parse_title(full_title)
 
-            if alias: 
-               print(f"Alias is true, setting to {base_title}")
+            # for the ALIAS - we want an alias if:
+            # 1. The alias flag is true
+            # 2. The full title is longer than the base title
+            if alias and len(base_title) < len(full_title): 
+               print(f"Alias is true and base_title is shorter, setting alias to {base_title}")
                date_dict['BaseTitle'] = base_title
             else:
                date_dict['BaseTitle'] = ""
