@@ -162,8 +162,16 @@ def get_custom_sub(base_title, full_sub):
    # return the desired sub_len
    print(f"Current File Name (Title - [Subtitle]): ({base_title} - [{full_sub}])")
 
-   custom_sub_len = input("Enter desired subtitle length: [0] (drop sub), [1-n] (1-n words), [a] all.\n")
-   # TODO need to validate the input and perhaps preview result.
+   input_success = False
+
+   while not input_success:
+      custom_sub_len = input("Enter desired subtitle length: [0] (drop sub), [1-n] (1-n words), [a] all.\n")
+      # validate the input and perhaps preview result.
+      if custom_sub_len.isdigit() or custom_sub_len == "a":
+         input_success = True
+         print(f"Thanks for entering valid input {custom_sub_len}")
+      else:
+         print("Invalid input. Try again.")
 
    return custom_sub_len
 
