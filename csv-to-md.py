@@ -257,7 +257,7 @@ def write_book_md(title, author, book_md):
     if book_path.is_file():
         print(f"Skipping duplicate {book_path} because file already exists.")
     elif dry_run == False:
-        with open(book_path, "w") as book_file:
+        with open(book_path, mode="w", encoding="UTF-8") as book_file:
             book_file.writelines(book_md)
 
 
@@ -330,11 +330,11 @@ def main():
         alias = True
 
     # read in the default or specified template
-    with open(template_path, newline="") as template_file:
+    with open(template_path, newline="", encoding="UTF-8") as template_file:
         template_string = template_file.read()
         # print(template_string)
 
-    with open(csv_path, newline="") as csv_file:
+    with open(csv_path, newline="", encoding="UTF-8") as csv_file:
         reader = csv.DictReader(csv_file)
         for count, row in enumerate(reader):
             # check count of columns in this row just to be SURE. 24?
