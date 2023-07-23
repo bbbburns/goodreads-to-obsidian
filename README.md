@@ -2,7 +2,7 @@
 Take a Goodreads CSV export and convert that into a series of markdown notes for Obsidian.
 
 ## Is it done?
-This works for me. I think it's ready to use.
+This works for me. I think it's ready to use. You can find my [blog post about it for some more background](https://bbbburns.com/blog/2023/06/converting-from-goodreads-to-obsidian/).
 
 ## Who is this for?
 For those who want to migrate all of their existing Goodreads book data to individual markdown files in Obsidian. Then you plan to stop adding new books to Goodreads.
@@ -92,22 +92,38 @@ modified:
 
 ### Obsidian Library Dashboard
 
-The dataview is where all of this comes together. Here's where you can see all of your shelves and the list of all your books. This is entirely inspired by the Obsidan Book Search plugin. I copy this to my _dataview folder as a file called Library.md
+The dataview is where all of this comes together. Here's where you can see all of your shelves and the list of all your books. This is entirely inspired by the Obsidan Book Search plugin and I've modified it some. I copy this to my _dataview folder as a file called Library.md
 
 ````
 # 📚 Library
 
+## Currently Reading
+
 ```dataview
 TABLE WITHOUT ID
-	status as Status,
-	rows.file.link as Book
+	file.link as Book,
+	date_start as Started
 FROM  #book
-WHERE !contains(file.path, "Templates")
-GROUP BY status
-SORT status
+WHERE 
+	status = "currently-reading" 
+	AND !contains(file.path, "Templates")
+SORT date_start DESC
 ```
 
-## List of all books
+## To Read
+
+```dataview
+TABLE WITHOUT ID
+	file.link as Book,
+	date_start as Added
+FROM  #book
+WHERE 
+	status = "to-read" 
+	AND !contains(file.path, "Templates")
+SORT date_start DESC
+```
+
+## All Books
 
 ```dataview
 TABLE WITHOUT ID
@@ -118,7 +134,7 @@ TABLE WITHOUT ID
 	series.series_name + " " + series.series_num as Series
 FROM #book
 WHERE !contains(file.path, "Templates")
-SORT status DESC, file.ctime ASC
+SORT status ASC, file.ctime ASC
 ```
 ````
 
@@ -130,7 +146,7 @@ If you're planning to do all future book reviews in a private Obsidian vault, bu
 Nothing, unless you choose to take some action. This is just a simple data converter.
 
 ## What about new books that I read?
-You could use another great plugin `Goodsidian` to add new books directly to Obsidian. This script won't do that.
+You could use another great plugin [Goodsidian](https://github.com/selfire1/goodsidian) to add new books directly to Obsidian. This script won't do that.
 
 ## What if I want to keep using Goodreads?
 Then this probably is not for you. However, there are some solutions that do that! Like [Goodsidian](https://github.com/selfire1/goodsidian) - which takes updates from your feeds of active Goodreads use and puts those into Obsidian. That wasn't what I wanted!
