@@ -134,7 +134,7 @@ TABLE WITHOUT ID
 	series.series_name + " " + series.series_num as Series
 FROM #book
 WHERE !contains(file.path, "Templates")
-SORT status ASC, file.ctime ASC
+SORT status ASC, file.ctime DESC
 ```
 ````
 
