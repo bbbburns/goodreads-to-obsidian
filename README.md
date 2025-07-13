@@ -131,12 +131,12 @@ SORT date_start DESC
 ```dataview
 TABLE WITHOUT ID
 	file.link as Book,
-	date_start as Added
+	date_add as Added
 FROM  #book
 WHERE 
 	status = "to-read" 
 	AND !contains(file.path, "Templates")
-SORT date_start DESC
+SORT date_add DESC
 ```
 
 ## All Books
