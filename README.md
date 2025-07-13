@@ -62,14 +62,13 @@ tags: book, media
 publish: false
 title: "{{title}}"
 aliases:
-series:
-    series_name: 
-    series_num: 
+series_name: 
+series_num: 
 author: [{{author}}]
 status: 
 isbn: {{isbn10}}
 isbn13: {{isbn13}}
-category: {{category}}
+category: [{{category}}]
 rating:
 read_count:
 binding:
@@ -88,6 +87,23 @@ modified:
 {{description}}
 
 ## Review
+```
+
+Note: I have changed this to flatten series_name and series_num to top-level keys. They're no longer nested under the now-deleted seres. If you've used a version of this prior to July 2025, you may have the old style nested property.
+
+Old:
+
+```
+series:
+  series_name:
+  series_num:
+```
+
+New:
+
+```
+series_name:
+series_num:
 ```
 
 ### Obsidian Library Dashboard
@@ -138,6 +154,11 @@ SORT status ASC, file.ctime DESC
 ```
 ````
 
+Note: If you use nested properties for series, the All Books query would be as follows for series:
+
+```
+series.series_name + " " + series.series_num as Series
+```
 
 ## Why would I want this?
 If you're planning to do all future book reviews in a private Obsidian vault, but have a bunch of book `read` data that you want to bring with you.
