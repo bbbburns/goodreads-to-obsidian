@@ -1,22 +1,22 @@
 ---
 tags: book, media
 publish: false
-title: "$Title"
-aliases: "$BaseTitle"
-series:
-    series_name: "$Series"
-    series_num: $SeriesNum
+title: $Title
+aliases: $BaseTitle
+series_name: $Series
+series_num: $SeriesNum
 author: [${Author}]
 status: $ExclusiveShelf
 isbn: $ISBN
 isbn13: $ISBN13
-category:
+category: []
 rating: $MyRating
 read_count: $ReadCount
 binding: $Binding
 num_pages: $NumberofPages
 pub_date: $YearPublished
 cover:
+date_add: $DateAdded
 date_start: $DateAdded
 date_end: $DateRead
 created:

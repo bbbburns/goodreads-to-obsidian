@@ -60,22 +60,22 @@ This is a helpful template for your Obsidian if you are using Templater and want
 ---
 tags: book, media
 publish: false
-title: "{{title}}"
+title: {{title}}
 aliases:
-series:
-    series_name: 
-    series_num: 
+series_name: 
+series_num: 
 author: [{{author}}]
 status: 
 isbn: {{isbn10}}
 isbn13: {{isbn13}}
-category: {{category}}
+category: [{{category}}]
 rating:
 read_count:
 binding:
 num_pages: {{totalPage}}
 pub_date: {{publishDate}}
 cover: {{coverURL}}
+date_add: <% tp.date.now("YYYY-MM-DD") %>
 date_start:
 date_end:
 created: <% tp.file.creation_date() %>
@@ -89,6 +89,25 @@ modified:
 
 ## Review
 ```
+
+Note: I have changed this to flatten series_name and series_num to top-level keys. They're no longer nested under the now-deleted seres. If you've used a version of this prior to July 2025, you may have the old style nested property.
+
+Old:
+
+```
+series:
+  series_name:
+  series_num:
+```
+
+New:
+
+```
+series_name:
+series_num:
+```
+
+See the section on Flattening Frontmatter at the end.
 
 ### Obsidian Library Dashboard
 
@@ -115,12 +134,12 @@ SORT date_start DESC
 ```dataview
 TABLE WITHOUT ID
 	file.link as Book,
-	date_start as Added
+	date_add as Added
 FROM  #book
 WHERE 
 	status = "to-read" 
 	AND !contains(file.path, "Templates")
-SORT date_start DESC
+SORT date_add DESC
 ```
 
 ## All Books
@@ -138,6 +157,11 @@ SORT status ASC, file.ctime DESC
 ```
 ````
 
+Note: If you use nested properties for series, the All Books query would be as follows for series:
+
+```
+series.series_name + " " + series.series_num as Series
+```
 
 ## Why would I want this?
 If you're planning to do all future book reviews in a private Obsidian vault, but have a bunch of book `read` data that you want to bring with you.
@@ -150,3 +174,25 @@ You could use another great plugin [Goodsidian](https://github.com/selfire1/good
 
 ## What if I want to keep using Goodreads?
 Then this probably is not for you. However, there are some solutions that do that! Like [Goodsidian](https://github.com/selfire1/goodsidian) - which takes updates from your feeds of active Goodreads use and puts those into Obsidian. That wasn't what I wanted!
+
+## Flattening Frontmatter
+
+If you've used a version of this before July 2025, you likely have nested frontmatter.
+
+```
+series:
+  series_name:
+  seres_num:
+```
+
+To convert your old notes, you can use a text editor such as VS Code to delete the `series:` and remove the spaces before `series_name` and `series_num` in every note.
+
+You could also use the `flatten-series.py` in the following manner:
+
+1. Make a backup of your Vault. You are about to run a script that could modify or delete LOTS of files really fast.
+2. Copy all of your book notes into some temporary directory. Let's assume it's called `tmp`.
+3. Install the python-frontmatter library with `pip install python-frontmatter`
+4. Run the flatten-series command. `python3 flatten-series.py`
+  1. When prompted, specify the location of your `tmp` directory.
+5. Look at all the modified notes in your `tmp` directory.
+6. If you're happy with these notes, delete all of the book notes in your Obsidian vault and copy in these new, modified files from `tmp`
