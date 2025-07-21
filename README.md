@@ -60,7 +60,7 @@ This is a helpful template for your Obsidian if you are using Templater and want
 ---
 tags: book, media
 publish: false
-title: "{{title}}"
+title: {{title}}
 aliases:
 series_name: 
 series_num: 
@@ -75,7 +75,7 @@ binding:
 num_pages: {{totalPage}}
 pub_date: {{publishDate}}
 cover: {{coverURL}}
-date_add:
+date_add: <% tp.date.now("YYYY-MM-DD") %>
 date_start:
 date_end:
 created: <% tp.file.creation_date() %>
