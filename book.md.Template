@@ -1,9 +1,9 @@
 ---
 tags: book, media
 publish: false
-title: "$Title"
-aliases: "$BaseTitle"
-series_name: "$Series"
+title: $Title
+aliases: $BaseTitle
+series_name: $Series
 series_num: $SeriesNum
 author: [${Author}]
 status: $ExclusiveShelf
