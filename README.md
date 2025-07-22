@@ -18,7 +18,7 @@ For those who want to migrate all of their existing Goodreads book data to indiv
 
 ### Running the python file
 
-I wrote this with python 3.10. You will have better results if you use a similar version.
+I wrote this with python 3.10. You will have better results if you use a similar or newer version.
 
 Usage:
 
@@ -54,7 +54,7 @@ The final option is `--dry` which turns off the file write operations and just d
 
 ### Obsidian Book Template
 
-This is a helpful template for your Obsidian if you are using Templater and want to merge what I have here with the Obsidian Book Search plugin. I copy this to my Templates directory as a file called BookTemplate.md. Then I setup Templater and the Obsidian Book Search plugin to use this template. NOTE: This template is DIFFERENT than the one the python script uses. This template here is for Obsidian.
+This is a helpful template for your Obsidian if you are using Templater and want to merge what I have here with the Obsidian Book Search plugin. I copy this to my Templates directory as a file called BookTemplate.md. Then I setup Templater and the Obsidian Book Search plugin to use this template. NOTE: This template is DIFFERENT than the one the Python script uses. This template here is for Obsidian.
 
 ```
 ---
@@ -111,7 +111,7 @@ See the section on Flattening Frontmatter at the end.
 
 ### Obsidian Library Dashboard
 
-The dataview is where all of this comes together. Here's where you can see all of your shelves and the list of all your books. This is entirely inspired by the Obsidan Book Search plugin and I've modified it some. I copy this to my _dataview folder as a file called Library.md
+The dataview is where all of this comes together. Here's where you can see all of your shelves and the list of all your books. This is entirely inspired by the Obsidan Book Search plugin and I've modified it some. I copy this to my _dataview folder as a file called Library.md This query has also been modified to handle the flattened series.
 
 ````
 # 📚 Library
@@ -150,14 +150,14 @@ TABLE WITHOUT ID
 	"![|60](" + cover + ")" as Cover,
 	link(file.link, title) as Title,
 	author as Author,
-	series.series_name + " " + series.series_num as Series
+	series_name + " " + series_num as Series
 FROM #book
 WHERE !contains(file.path, "Templates")
 SORT status ASC, file.ctime DESC
 ```
 ````
 
-Note: If you use nested properties for series, the All Books query would be as follows for series:
+Note: If you still use nested properties for series, the `All Books` query would be as follows for series:
 
 ```
 series.series_name + " " + series.series_num as Series
@@ -169,11 +169,11 @@ If you're planning to do all future book reviews in a private Obsidian vault, bu
 ## What happens to my data in Goodreads?
 Nothing, unless you choose to take some action. This is just a simple data converter.
 
-## What about new books that I read?
+## What about new books that I read and log into Goodreads?
 You could use another great plugin [Goodsidian](https://github.com/selfire1/goodsidian) to add new books directly to Obsidian. This script won't do that.
 
 ## What if I want to keep using Goodreads?
-Then this probably is not for you. However, there are some solutions that do that! Like [Goodsidian](https://github.com/selfire1/goodsidian) - which takes updates from your feeds of active Goodreads use and puts those into Obsidian. That wasn't what I wanted!
+Then this script is probably not for you. However, there are some solutions that do that! Like [Goodsidian](https://github.com/selfire1/goodsidian) - which takes updates from your feeds of active Goodreads use and puts those into Obsidian. That wasn't what I wanted!
 
 ## Flattening Frontmatter
 
@@ -195,4 +195,4 @@ You could also use the `flatten-series.py` in the following manner:
 4. Run the flatten-series command. `python3 flatten-series.py`
   1. When prompted, specify the location of your `tmp` directory.
 5. Look at all the modified notes in your `tmp` directory.
-6. If you're happy with these notes, delete all of the book notes in your Obsidian vault and copy in these new, modified files from `tmp`
+6. If you're happy with these notes, delete all of the book notes in your Obsidian vault (remember, you have a backup, right?) and copy in these new, modified files from `tmp`.
